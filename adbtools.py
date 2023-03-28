@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
 
+#### lib
 import subprocess  , sys
 import time
 from simple_term_menu import TerminalMenu
 
+#### script info
 __author__ = "Sonia Core"
 __email__ = "####"
 __license__ = "GPL-3"
-__version_info__ = (0, 0, 2)
+__version_info__ = (0, 1, 2)
 __version__ = ".".join(map(str, __version_info__))
 
-
+#### banner
 BANNER = """
    __    ____  ____    ____  _____  _____  __    ___ 
   /__\  (  _ \(  _ \  (_  _)(  _  )(  _  )(  )  / __)
@@ -19,9 +21,10 @@ BANNER = """
 
 """
 
+#### const
 BANNEDWORDS = ["localhost", "127.0.0.1"]
 ADBPORT = ":5555"
-MODES = ["Connect" , "Disconnect", "Reset Connection" , "Turn on Wifi"]
+MODES = ["Connect" , "Disconnect", "Reset Connection" , "WIFI"]
 WIFI = ["disable" , "enable"]
 
 class IPParser(object):
@@ -48,13 +51,13 @@ class IPParser(object):
       
       return False
 
-def proc_executer(argument : list) :
+def exec(argument : list) :
     return subprocess.run(
     argument, capture_output=True, text=True)
 
 def router_stat() -> list:
     ip_parse = IPParser()
-    result = proc_executer(["netstat", "-r", "-f", "inet"])
+    result = exec(["netstat", "-r", "-f", "inet"])
 
     lines: list = result.stdout.strip().split("\n")
     
@@ -79,26 +82,26 @@ def router_stat() -> list:
 
 def cmd_adb_connection(method : str , ip: str, port: str = ADBPORT) -> None:
     if method == "connect" :
-        proc_executer(["adb" , "tcpip" ,ADBPORT.replace(":","")])
-        cmd = proc_executer(["adb", "connect", ip + port])
+        exec(["adb" , "tcpip" ,ADBPORT.replace(":","")])
+        cmd = exec(["adb", "connect", ip + port])
     elif method == "disconnect" :
-        cmd = proc_executer(["adb", "disconnect", ip + port])
+        cmd = exec(["adb", "disconnect", ip + port])
 
     result : str = cmd.stdout.strip()
     print(result)
 
 
 def cmd_connection_reset() -> None:
-    proc_executer(['adb','shell','cmd' ,'connectivity' ,'airplane-mode' , 'enable'])
+    exec(['adb','shell','cmd' ,'connectivity' ,'airplane-mode' , 'enable'])
     time.sleep(1.0)
-    proc_executer(['adb','shell','cmd' ,'connectivity' ,'airplane-mode' , 'disable'])
+    exec(['adb','shell','cmd' ,'connectivity' ,'airplane-mode' , 'disable'])
     time.sleep(1.0)
-    proc_executer(['adb','shell' ,'svc', 'data' ,'enable'])
+    exec(['adb','shell' ,'svc', 'data' ,'enable'])
     
     
 
 def cmd_wifi(value : str) -> None:
-    proc_executer(['adb','shell' ,'svc' ,'wifi' ,value])
+    exec(['adb','shell' ,'svc' ,'wifi' ,value])
 
 ###########################
 def main():
